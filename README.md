@@ -1,2 +1,58 @@
 # cli-batching-simple
 A simple batch processing script for RapidCompact CLI
+
+This script allows you to use RapidCompact CLI on a batch of 3D models, in order to
+* create optimized versions of the input models
+* render images of input and output (for comparison)
+* write JSON stats files of input and output (for comparison)
+
+
+## Requirements & basic usage
+
+You will need Python 3.x installed to run this script. Note that, in case you have two installations running in parallel (Python 2.x and Python 3.x), all commands may need to be run with "python3" in the beginning, instead of just "python".
+
+
+To *display help and available options*, use this command:
+
+```
+python optimize.py -h
+```
+
+To *run* this script, optimizing all assets within directory "input" with default parameters and exporting results to output directory "output", use the following command:
+```
+python optimize.py
+```
+
+### Deleting the output directory first (cleanup)
+
+To start with a cleanup step that deletes the output directory, use the `-d` flag:
+```
+python optimize.py -d
+```
+
+### Advanced options
+For an up-to-date listing of advanced parameters, use the following command:
+```
+python optimize.py -h
+```
+
+The list of parameters should be the following:
+```
+usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] [-c CONFIGFILE] [-t TARGET] [-s SUFFIX] [-d]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUTDIRECTORY, --inputDirectory INPUTDIRECTORY
+                        input directory
+  -o OUTPUTDIRECTORY, --outputDirectory OUTPUTDIRECTORY
+                        output directory
+  -c CONFIGFILE, --configFile CONFIGFILE
+                        JSON config file for RapidCompact
+  -t TARGET, --target TARGET
+                        target parameter to be used for RapidCompact -c command (example: 1MB, default: use decimation
+                        target from config file)
+  -s SUFFIX, --suffix SUFFIX
+                        suffix to be used for output file name
+  -d, --delete_output_first
+                        if specified, content of the output directory will be deleted (cleaned up) before processing
+```

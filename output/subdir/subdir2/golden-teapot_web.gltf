@@ -1,0 +1,189 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5123,
+      "count": 59997,
+      "max": [
+        11539
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 11540,
+      "max": [
+        0.044140074402093887,
+        0.040478404611349106,
+        0.026228960603475571
+      ],
+      "min": [
+        -0.038534779101610184,
+        -7.9045111078812624e-07,
+        -0.025169022381305695
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 11540,
+      "max": [
+        0.99910634756088257,
+        0.99881595373153687
+      ],
+      "min": [
+        0.00089366838801652193,
+        0.0011840692022815347
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 11540,
+      "max": [
+        0.99991524219512939,
+        0.99999034404754639,
+        0.99999862909317017
+      ],
+      "min": [
+        -0.99989813566207886,
+        -0.99999457597732544,
+        -0.99995851516723633
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 11540,
+      "max": [
+        0.99997395277023315,
+        0.9998740553855896,
+        0.99999880790710449,
+        1
+      ],
+      "min": [
+        -0.99999457597732544,
+        -0.99833405017852783,
+        -0.99999082088470459,
+        -1
+      ],
+      "type": "VEC4"
+    }
+  ],
+  "asset": {
+    "generator": "Created by RapidCompact v4.5.1 | www.rapidcompact.com",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 119994,
+      "byteOffset": 0,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 138480,
+      "byteOffset": 119996,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 92320,
+      "byteOffset": 258476,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 138480,
+      "byteOffset": 350796,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 184640,
+      "byteOffset": 489276,
+      "byteStride": 16,
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 673916,
+      "uri": "golden-teapot_web.data.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "material0_normal.jpg"
+    }
+  ],
+  "materials": [
+    {
+      "normalTexture": {
+        "index": 0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.90000000000000002,
+          0.69999999999999996,
+          0,
+          1
+        ],
+        "roughnessFactor": 0.20000000000000001
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 3,
+            "POSITION": 1,
+            "TANGENT": 4,
+            "TEXCOORD_0": 2
+          },
+          "indices": 0,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0
+    }
+  ],
+  "samplers": [
+    {
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
