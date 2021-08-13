@@ -7,10 +7,15 @@ This script allows you to use RapidCompact CLI on a batch of 3D models, in order
 * write JSON stats files of input and output (for comparison)
 
 
+## Command line use
+In case you are not familiar with using a command line, or with the RapidCompact CLI, here are some useful tips:
+* On Windows, you can launch a command line window, called *Windows Power Shell*, in your current directory in the Windows explorer by right-clicking into the explorer Windows while pressing the SHIFT key. There should then be a context menu option called "Open PowerShell window here", which you can select to open the PowerShell window where you can type your commands.
+* RapidCompact CLI is a powerful CLI tool for enterprise users of RapidCompact. Its documentation is accessible [here](https://rapidcompact.com/doc/cli/index.html).
+
+
 ## Requirements & basic usage
 
 You will need Python 3.x installed to run this script. Note that, in case you have two installations running in parallel (Python 2.x and Python 3.x), all commands may need to be run with "python3" in the beginning, instead of just "python".
-
 
 To *display help and available options*, use this command:
 
