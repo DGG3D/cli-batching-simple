@@ -53,8 +53,8 @@
   "numSheenRoughnessMaps": 0,
   "numSpecularValueMaps": 0,
   "numSpecularColorMaps": 0,
-  "avgAngleDistortion": 0.0477499,
-  "maxAngleDistortion": 1.97537,
+  "avgAngleDistortion": 0.0509954,
+  "maxAngleDistortion": 1.96886,
   "displacementReferenceMin": 0,
   "displacementReferenceMax": 0
 }

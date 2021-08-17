@@ -148,13 +148,13 @@ for inputFile in inputFiles:
                  
         # import
         cmdline.append("-i")
-        cmdline.append(inputFile)
+        cmdline.append("\"" + inputFile + "\"")
         
         # write stats and rendering for input
         cmdline.append("--write_info")
-        cmdline.append(inputFile_statsExport)
+        cmdline.append("\"" + inputFile_statsExport + "\"")
         cmdline.append("--render_image")
-        cmdline.append(inputFile_rendering)
+        cmdline.append("\"" + inputFile_rendering + "\"")
         
         # create atlas        
         cmdline.append("-c")
@@ -162,15 +162,15 @@ for inputFile in inputFiles:
         
         # write stats and rendering for output
         cmdline.append("--render_image")
-        cmdline.append(exportFile_rendering)
+        cmdline.append("\"" + exportFile_rendering + "\"")
         cmdline.append("--write_info")
-        cmdline.append(exportFile_statsExport)
+        cmdline.append("\"" + exportFile_statsExport + "\"")
 
         # export to file(s)
         for outFileFormat in outputFormats:  
             exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
             cmdline.append("-e")
-            cmdline.append(exportFile)
+            cmdline.append("\"" + exportFile + "\"")
      
         # run RapidCompact        
         jointCMD = " ".join(cmdline)
