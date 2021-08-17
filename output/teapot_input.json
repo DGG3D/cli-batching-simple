@@ -35,6 +35,8 @@
   "hasTransmissionMap": false,
   "hasSheenColorMap": false,
   "hasSheenRoughnessMap": false,
+  "hasSpecularValueMap": false,
+  "hasSpecularColorMap": false,
   "numTSNormalMaps": 0,
   "numOSNormalMaps": 0,
   "numBaseColorMaps": 0,
@@ -49,6 +51,8 @@
   "numTransmissionMaps": 0,
   "numSheenColorMaps": 0,
   "numSheenRoughnessMaps": 0,
+  "numSpecularValueMaps": 0,
+  "numSpecularColorMaps": 0,
   "displacementReferenceMin": 0,
   "displacementReferenceMax": 0
 }

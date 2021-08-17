@@ -1,8 +1,8 @@
 {
   "bbMin":    [-0.0385382, 0, -0.02517],
-  "bbMax":    [0.0441372, 0.0404774, 0.0262299],
-  "bbCenter": [0.00279952, 0.0202387, 0.000529969],
-  "bbSize":   [0.0826754, 0.0404774, 0.0513999],
+  "bbMax":    [0.0441372, 0.0404773, 0.0262278],
+  "bbCenter": [0.00279951, 0.0202386, 0.000528896],
+  "bbSize":   [0.0826754, 0.0404773, 0.0513977],
   "numVertices": 55372,
   "numVerticesSingleIndexed": 55372,
   "numTriangles": 109843,
@@ -35,6 +35,8 @@
   "hasTransmissionMap": false,
   "hasSheenColorMap": false,
   "hasSheenRoughnessMap": false,
+  "hasSpecularValueMap": false,
+  "hasSpecularColorMap": false,
   "numTSNormalMaps": 0,
   "numOSNormalMaps": 0,
   "numBaseColorMaps": 0,
@@ -49,6 +51,8 @@
   "numTransmissionMaps": 0,
   "numSheenColorMaps": 0,
   "numSheenRoughnessMaps": 0,
+  "numSpecularValueMaps": 0,
+  "numSpecularColorMaps": 0,
   "displacementReferenceMin": 0,
   "displacementReferenceMax": 0
 }

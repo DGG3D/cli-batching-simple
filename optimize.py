@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import shutil
+from pathlib import Path
 from argparse import ArgumentParser
 
 
@@ -72,13 +73,13 @@ while dirsToProcess:
         name = fileOrDir
         combinedName = nextInputDir + "/" + name        
         # file
-        if os.path.isfile(combinedName):
-            # check against extensions and collect file        
-            # ...
+        if os.path.isfile(combinedName):            
             base, ext = os.path.splitext(combinedName) 
             ext = ext.lower()
-            if ext == ".glb":
-                inputFiles.append(combinedName)
+            for cExt in collectedExtensions:
+                if ext == cExt:
+                    inputFiles.append(combinedName)
+                    break
         # directory
         else:
             dirsToProcess.append(combinedName)
@@ -97,22 +98,23 @@ for inputFile in inputFiles:
     print("Processing Asset " + str(i) + " / " + str(len(inputFiles)) + ": \"" + inputFile + "\"")
     i += 1
     
-    base, ext = os.path.splitext(inputFile)
-    base  = os.path.relpath(base, inputDirectory)
-    base2 = os.path.join(outputDirectory, base)
-    exportFile_prefix      = base2 + outputSuffix + "."    
-    exportFile_statsExport = base2 + outputSuffix + ".json"
-    exportFile_rendering   = base2 + outputSuffix + ".jpg"
-    inputFile_statsExport  = base2 + "_input.json"
-    inputFile_rendering    = base2 + "_input.jpg"
+    fnameStem = Path(inputFile).stem
+    fnamePrefix, ext = os.path.splitext(inputFile)       
+    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)    
+    outFileprefixAux = os.path.join(outputDirectory, fnameRel)
+    exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"
+    exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"
+    inputFile_statsExport  = outFileprefixAux + "_input.json"
+    inputFile_rendering    = outFileprefixAux + "_input.jpg"
     
     cmdline = [rpdxExe]
     
     try:
     
         hasAllExports = True
-        for outFileFormat in outputFormats:
-            if not os.path.isfile(exportFile_prefix + outFileFormat):
+        for outFileFormat in outputFormats:            
+            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
+            if not os.path.isfile(exportFile):
                 hasAllExports = False
                 break            
     
@@ -165,9 +167,10 @@ for inputFile in inputFiles:
         cmdline.append(exportFile_statsExport)
 
         # export to file(s)
-        for outFileFormat in outputFormats:            
+        for outFileFormat in outputFormats:  
+            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
             cmdline.append("-e")
-            cmdline.append(exportFile_prefix + outFileFormat)
+            cmdline.append(exportFile)
      
         # run RapidCompact        
         jointCMD = " ".join(cmdline)

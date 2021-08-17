@@ -3,9 +3,9 @@
     {
       "bufferView": 0,
       "componentType": 5123,
-      "count": 59997,
+      "count": 60000,
       "max": [
-        11539
+        11673
       ],
       "min": [
         0
@@ -15,111 +15,111 @@
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 11540,
+      "count": 11674,
       "max": [
         0.044140074402093887,
-        0.040478404611349106,
-        0.026228960603475571
+        0.040480338037014008,
+        0.026226617395877838
       ],
       "min": [
         -0.038534779101610184,
-        -7.9045111078812624e-07,
-        -0.025169022381305695
+        -8.1763835169113008e-07,
+        -0.025166679173707962
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 11540,
+      "count": 11674,
       "max": [
-        0.99879014492034912,
-        0.9991142749786377
+        0.99907374382019043,
+        0.99894088506698608
       ],
       "min": [
-        0.0012098550796508789,
-        0.00088575267000123858
+        0.00092625536490231752,
+        0.0010590965393930674
       ],
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5126,
-      "count": 11540,
+      "count": 11674,
       "max": [
-        0.99991524219512939,
-        0.99999034404754639,
-        0.99999862909317017
+        0.99988692998886108,
+        0.99999737739562988,
+        0.99999719858169556
       ],
       "min": [
         -0.99989813566207886,
-        -0.99999457597732544,
-        -0.99995851516723633
+        -0.99999701976776123,
+        -0.99999886751174927
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 11540,
+      "count": 11674,
       "max": [
-        0.99997395277023315,
-        0.99987399578094482,
-        0.99999880790710449,
+        0.99964684247970581,
+        0.99994874000549316,
+        0.99965697526931763,
         1
       ],
       "min": [
-        -0.99999457597732544,
-        -0.9996943473815918,
-        -0.99999082088470459,
+        -0.99999594688415527,
+        -0.99996131658554077,
+        -0.9999009370803833,
         -1
       ],
       "type": "VEC4"
     }
   ],
   "asset": {
-    "generator": "Created by RapidCompact v4.5.1 | www.rapidcompact.com",
+    "generator": "Created by RapidCompact v4.6.0 | www.rapidcompact.com",
     "version": "2.0"
   },
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 119994,
+      "byteLength": 120000,
       "byteOffset": 0,
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteLength": 138480,
-      "byteOffset": 119996,
+      "byteLength": 140088,
+      "byteOffset": 120000,
       "byteStride": 12,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 92320,
-      "byteOffset": 258476,
+      "byteLength": 93392,
+      "byteOffset": 260088,
       "byteStride": 8,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 138480,
-      "byteOffset": 350796,
+      "byteLength": 140088,
+      "byteOffset": 353480,
       "byteStride": 12,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 184640,
-      "byteOffset": 489276,
+      "byteLength": 186784,
+      "byteOffset": 493568,
       "byteStride": 16,
       "target": 34962
     }
   ],
   "buffers": [
     {
-      "byteLength": 673916,
+      "byteLength": 680352,
       "uri": "teapot_web.data.bin"
     }
   ],
