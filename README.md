@@ -36,7 +36,7 @@ python optimize.py -d
 
 ### Creating and using a config file for RapidCompact
 
-There are multiple ways of obtaining a config file for RapidCompact CLI. Basically, such a file is a JSON file that contains [settings](https://rapidcompact.com/doc/cli/v04/Configuration/index.html) for different parts of the 3D processing pipeline, including import / export, optimization, rendering, compression, and more. Depending on the CLI version you have, there may be different settings available, so it's useful to create a fresh config file using the CLI itself, using the following command:
+There are multiple ways of obtaining a config file for RapidCompact CLI. Basically, such a file is a JSON file that contains [settings](https://rapidcompact.com/doc/cli/latest/Configuration/index.html) for different parts of the 3D processing pipeline, including import / export, optimization, rendering, compression, and more. Depending on the CLI version you have, there may be different settings available, so it's useful to create a fresh config file using the CLI itself, using the following command:
 ```
 rpdx --write_config
 ```
