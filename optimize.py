@@ -28,6 +28,7 @@ parser.add_argument("-c", "--configFile",          help="JSON config file for Ra
 parser.add_argument("-t", "--target",              help="target parameter to be used for RapidCompact -c command (example: 1MB, default: use decimation target from config file)", default="")
 parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_web")
 parser.add_argument("-d", "--delete_output_first", help="if specified, content of the output directory will be deleted (cleaned up) before processing", action="store_true")
+parser.add_argument("-r", "--rapidcompact_exe",    help="RapidCompact CLI executable", default="rpdx")
 
 pArgs    = parser.parse_args()
 argsDict = vars(pArgs)
@@ -38,6 +39,7 @@ outputSuffix    = argsDict["suffix"]
 configFile      = argsDict["configFile"]
 compactTarget   = argsDict["target"]
 outputSuffix    = argsDict["suffix"]
+rpdxExe         = argsDict["rapidcompact_exe"]
 cleanupFirst    = pArgs.delete_output_first
 
 
@@ -177,6 +179,7 @@ for inputFile in inputFiles:
         out = subprocess.check_output(jointCMD)
 
     except Exception as e:        
+        print("\nERROR: RapidCompact CLI could not be run successfully. Make sure it is installed and that the parameters are correct:\n")
         print("\n                       CLI Command:\n" + jointCMD)
         print("\n                       CLI Output:\n" + e.output.decode())        
 
