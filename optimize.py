@@ -21,6 +21,8 @@ outputFormats      = ["glb", "gltf"]
 # argument parsing
 # #############################################################################
 
+
+
 parser = ArgumentParser()
 
 parser.add_argument("-i", "--inputDirectory",      help="input directory", default="input")
