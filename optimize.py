@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+from statistics import mode
 import subprocess
 import sys
 import shutil
@@ -28,7 +29,7 @@ parser.add_argument("-c", "--configFile",          help="JSON config file for Ra
 parser.add_argument("-t", "--target",              help="target parameter to be used for RapidCompact -c command (example: 1MB, default: use decimation target from config file)", default="")
 parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_web")
 parser.add_argument("-d", "--delete_output_first", help="if specified, content of the output directory will be deleted (cleaned up) before processing", action="store_true")
-parser.add_argument("-r", "--rapidcompact_exe",    help="RapidCompact CLI executable", default="rpdx")
+parser.add_argument("-q", "--qa_mode",             help="if specified, content of the output directory will be adjust to use as input for the qa-tool", action="store_true")
 
 pArgs    = parser.parse_args()
 argsDict = vars(pArgs)
@@ -39,9 +40,8 @@ outputSuffix    = argsDict["suffix"]
 configFile      = argsDict["configFile"]
 compactTarget   = argsDict["target"]
 outputSuffix    = argsDict["suffix"]
-rpdxExe         = argsDict["rapidcompact_exe"]
 cleanupFirst    = pArgs.delete_output_first
-
+qa_mode         = pArgs.qa_mode
 
 # #############################################################################
 # delete content of output dir, if requested
@@ -99,20 +99,39 @@ for inputFile in inputFiles:
     print("*************************************************************************")
     print("Processing Asset " + str(i) + " / " + str(len(inputFiles)) + ": \"" + inputFile + "\"")
     i += 1
-    
-    fnameStem = Path(inputFile).stem
-    fnamePrefix, ext = os.path.splitext(inputFile)       
-    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)    
-    outFileprefixAux = os.path.join(outputDirectory, fnameRel)
-    exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"
-    exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"
-    inputFile_statsExport  = outFileprefixAux + "_input.json"
-    inputFile_rendering    = outFileprefixAux + "_input.jpg"
+
+    fnameStem = Path(inputFile).stem                                                #teapot
+    fnamePrefix, ext = os.path.splitext(inputFile)                                  #input/subdir/teapot, .glb
+    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)                        #subdir/teapot
+    outFileprefixAux = os.path.join(outputDirectory, fnameRel)                      #output/subdir/teapot
+    if qa_mode:
+        outFileprefixAuxInput = outFileprefixAux + "-input\\" + fnameStem           #output/subdir/teapot-input/teapot
+        outFileprefixAuxOutput = outFileprefixAux + "-output\\" + fnameStem         #output/subdir/teapot-output/teapot
+        exportFile_statsExport = outFileprefixAuxOutput + outputSuffix + ".json"    #output/subdir/teapot-output/teapot_web.json
+        exportFile_rendering   = outFileprefixAuxOutput + outputSuffix + ".jpg"     #output/subdir/teapot-output/teapot_web.jpg
+        inputFile_statsExport  = outFileprefixAuxInput + "_input.json"              #output/subdir/teapot-input/teapot_input.json
+        inputFile_rendering    = outFileprefixAuxInput + "_input.jpg"               #output/subdir/teapot-input/teapot_input.jpg
+    else:
+        exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"          #output/subdir/teapot_web.json
+        exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"           #output/subdir/teapot_web.jpg
+        inputFile_statsExport  = outFileprefixAux + "_input.json"                   #output/subdir/teapot_input.json
+        inputFile_rendering    = outFileprefixAux + "_input.jpg"                    #output/subdir/teapot_input.jpg
     
     cmdline = [rpdxExe]
     
     try:
-    
+        if qa_mode:
+            if ext != ".glb" and ext != ".ply":
+                shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\")
+                print("os listdir: " + str(os.listdir(outFileprefixAux + "-input\\")))
+                for file in os.listdir(outFileprefixAux + "-input\\"):
+                    if "_input" not in file:
+                        os.rename(os.path.join(outFileprefixAux + "-input\\",file), os.path.join(outFileprefixAux + "-input\\", Path(file).stem + "_input" + os.path.splitext(file)[1]))
+            else:
+                if not os.path.exists(outFileprefixAux + "-input\\"):
+                    os.makedirs(outFileprefixAux + "-input\\")
+                shutil.copy2(inputFile, outFileprefixAuxInput + "_input" + ext)
+
         hasAllExports = True
         for outFileFormat in outputFormats:            
             exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
@@ -168,18 +187,22 @@ for inputFile in inputFiles:
         cmdline.append("--write_info")
         cmdline.append("\"" + exportFile_statsExport + "\"")
 
-        # export to file(s)
-        for outFileFormat in outputFormats:  
-            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
+        if qa_mode:
+            exportFile = outFileprefixAuxOutput + outputSuffix + ".glb"
             cmdline.append("-e")
             cmdline.append("\"" + exportFile + "\"")
+        else:
+            # export to file(s)
+            for outFileFormat in outputFormats:  
+                exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
+                cmdline.append("-e")
+                cmdline.append("\"" + exportFile + "\"")
      
         # run RapidCompact        
         jointCMD = " ".join(cmdline)
         out = subprocess.check_output(jointCMD)
 
     except Exception as e:        
-        print("\nERROR: RapidCompact CLI could not be run successfully. Make sure it is installed and that the parameters are correct:\n")
         print("\n                       CLI Command:\n" + jointCMD)
         print("\n                       CLI Output:\n" + e.output.decode())        
 
