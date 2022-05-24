@@ -3,6 +3,7 @@
   "bbMax":    [0.0441372, 0.0404773, 0.0262278],
   "bbCenter": [0.00279951, 0.0202386, 0.000528896],
   "bbSize":   [0.0826754, 0.0404773, 0.0513977],
+  "area3D":   0.00873151,
   "numVertices": 55372,
   "numVerticesSingleIndexed": 55372,
   "numTriangles": 109843,
@@ -10,11 +11,16 @@
   "numMeshes": 1,
   "numMaterials": 1,
   "numNodes": 2,
+  "numLights": 0,
   "hasRigidAnimations": false,
   "numRigidAnimations": 0,
   "hasSkinnedAnimations": false,
   "hasMorphTargets": false,
   "animations": [],
+  "extensionsUsed": [
+    "KHR_draco_mesh_compression"
+  ],
+  "extensionsUnsupported": [],
   "numTexels": 0,
   "hasUVs": false,
   "hasVertexColors": false,
@@ -53,6 +59,7 @@
   "numSheenRoughnessMaps": 0,
   "numSpecularValueMaps": 0,
   "numSpecularColorMaps": 0,
+  "numThicknessMaps": 0,
   "displacementReferenceMin": 0,
   "displacementReferenceMax": 0
 }

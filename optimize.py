@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from ntpath import join
 import os
 from statistics import mode
 import subprocess
@@ -75,7 +76,7 @@ while dirsToProcess:
     allFilesAndDirs = os.listdir(nextInputDir)      
     for fileOrDir in allFilesAndDirs:
         name = fileOrDir
-        combinedName = nextInputDir + "/" + name        
+        combinedName = os.path.normpath(nextInputDir + "/" + name)
         # file
         if os.path.isfile(combinedName):            
             base, ext = os.path.splitext(combinedName) 
@@ -106,6 +107,8 @@ for inputFile in inputFiles:
     fnamePrefix, ext = os.path.splitext(inputFile)                                  #input/subdir/teapot, .glb
     fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)                        #subdir/teapot
     outFileprefixAux = os.path.join(outputDirectory, fnameRel)                      #output/subdir/teapot
+
+    #### qa mode is true ####
     if qa_mode:
         outFileprefixAuxInput = outFileprefixAux + "-input\\" + fnameStem           #output/subdir/teapot-input/teapot
         outFileprefixAuxOutput = outFileprefixAux + "-output\\" + fnameStem         #output/subdir/teapot-output/teapot
@@ -113,6 +116,7 @@ for inputFile in inputFiles:
         exportFile_rendering   = outFileprefixAuxOutput + outputSuffix + ".jpg"     #output/subdir/teapot-output/teapot_web.jpg
         inputFile_statsExport  = outFileprefixAuxInput + "_input.json"              #output/subdir/teapot-input/teapot_input.json
         inputFile_rendering    = outFileprefixAuxInput + "_input.jpg"               #output/subdir/teapot-input/teapot_input.jpg
+    
     else:
         exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"          #output/subdir/teapot_web.json
         exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"           #output/subdir/teapot_web.jpg
@@ -122,13 +126,25 @@ for inputFile in inputFiles:
     cmdline = [rpdxExe]
     
     try:
+        #### qa mode is true ####
+        # copy asset file
         if qa_mode:
-            if ext != ".glb" and ext != ".ply":
-                shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\")
+            if ext != ".glb" and ext != ".fbx":
+                cmd = ["rpdx"]
+                cmd.append("-i")
+                cmd.append("\"" + inputFile + "\"")
+                cmd.append("-e")
+                cmd.append("\"" + outFileprefixAuxInput + "_input.glb" + "\"")
+                jointCMD = " ".join(cmd)
+                copyToGLB = subprocess.check_output(jointCMD)
+                ##########################
+                ##  different info.json ##
+                ##########################
+                '''shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\")
                 print("os listdir: " + str(os.listdir(outFileprefixAux + "-input\\")))
                 for file in os.listdir(outFileprefixAux + "-input\\"):
                     if "_input" not in file:
-                        os.rename(os.path.join(outFileprefixAux + "-input\\",file), os.path.join(outFileprefixAux + "-input\\", Path(file).stem + "_input" + os.path.splitext(file)[1]))
+                        os.rename(os.path.join(outFileprefixAux + "-input\\",file), os.path.join(outFileprefixAux + "-input\\", Path(file).stem + "_input" + os.path.splitext(file)[1]))'''
             else:
                 if not os.path.exists(outFileprefixAux + "-input\\"):
                     os.makedirs(outFileprefixAux + "-input\\")
@@ -189,10 +205,12 @@ for inputFile in inputFiles:
         cmdline.append("--write_info")
         cmdline.append("\"" + exportFile_statsExport + "\"")
 
+        #### qa mode is true ####
         if qa_mode:
             exportFile = outFileprefixAuxOutput + outputSuffix + ".glb"
             cmdline.append("-e")
             cmdline.append("\"" + exportFile + "\"")
+
         else:
             # export to file(s)
             for outFileFormat in outputFormats:  
