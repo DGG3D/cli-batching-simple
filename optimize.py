@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import barry_as_FLUFL
 from ntpath import join
 import os
 from statistics import mode
@@ -68,26 +69,29 @@ else:
 collectedExtensions = [".glb", ".gltf", ".stp", ".obj", ".ply", ".fbx"]
 
 inputFiles = []
+#dirsToProcess = [inputDirectory]
 
-dirsToProcess = [inputDirectory]
-
-while dirsToProcess:
-    nextInputDir    = dirsToProcess.pop()
-    allFilesAndDirs = os.listdir(nextInputDir)      
-    for fileOrDir in allFilesAndDirs:
-        name = fileOrDir
-        combinedName = os.path.normpath(nextInputDir + "/" + name)
-        # file
-        if os.path.isfile(combinedName):            
-            base, ext = os.path.splitext(combinedName) 
-            ext = ext.lower()
-            for cExt in collectedExtensions:
-                if ext == cExt:
-                    inputFiles.append(combinedName)
-                    break
-        # directory
-        else:
-            dirsToProcess.append(combinedName)
+for root, dirs, files in os.walk(inputDirectory):
+    for file in files:
+        if any(map(file.lower().endswith, collectedExtensions)):
+            filepath = os.path.join(root, file)
+            inputFiles.append(filepath)
+if qa_mode:
+    for asset in inputFiles:
+        assetName = Path(asset).stem
+        assetPath = os.path.dirname(asset)
+        assetExt = os.path.splitext(asset)[1]
+        for asset2 in inputFiles:
+            if asset == asset2:
+                continue
+            if assetPath == os.path.dirname(asset2) and (assetExt != ".glb" or os.path.splitext(asset2)[1] != ".glb"):
+                print("ERROR: maximum one asset per directory! \n Can not prosess: " + asset + " and " + asset2)
+                inputFiles.remove(asset)
+                inputFiles.remove(asset2)
+            elif os.path.dirname(asset2).startswith(assetPath) and assetExt != ".glb":
+                print("ERROR: no nested assets possible! \n Can not prosess: " + asset + " and " + asset2)
+                inputFiles.remove(asset)
+                inputFiles.remove(asset2)
             
 print("Collected " + str(len(inputFiles)) + " input files from input directory \"" + inputDirectory + "\".")
 
@@ -129,22 +133,8 @@ for inputFile in inputFiles:
         #### qa mode is true ####
         # copy asset file
         if qa_mode:
-            if ext != ".glb" and ext != ".fbx":
-                cmd = ["rpdx"]
-                cmd.append("-i")
-                cmd.append("\"" + inputFile + "\"")
-                cmd.append("-e")
-                cmd.append("\"" + outFileprefixAuxInput + "_input.glb" + "\"")
-                jointCMD = " ".join(cmd)
-                copyToGLB = subprocess.check_output(jointCMD)
-                ##########################
-                ##  different info.json ##
-                ##########################
-                '''shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\")
-                print("os listdir: " + str(os.listdir(outFileprefixAux + "-input\\")))
-                for file in os.listdir(outFileprefixAux + "-input\\"):
-                    if "_input" not in file:
-                        os.rename(os.path.join(outFileprefixAux + "-input\\",file), os.path.join(outFileprefixAux + "-input\\", Path(file).stem + "_input" + os.path.splitext(file)[1]))'''
+            if ext != ".glb":
+                shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\" + fnameStem + "_input\\")
             else:
                 if not os.path.exists(outFileprefixAux + "-input\\"):
                     os.makedirs(outFileprefixAux + "-input\\")
