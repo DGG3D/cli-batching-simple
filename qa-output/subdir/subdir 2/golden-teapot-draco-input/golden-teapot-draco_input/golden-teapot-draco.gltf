@@ -1,0 +1,103 @@
+{
+  "accessors": [
+    {
+      "componentType": 5126,
+      "count": 55372,
+      "max": [
+        0.044137217104434967,
+        0.040477395057678223,
+        0.026229903101921082
+      ],
+      "min": [
+        -0.038538184016942978,
+        0,
+        -0.025169964879751205
+      ],
+      "type": "VEC3"
+    },
+    {
+      "componentType": 5126,
+      "count": 55372,
+      "type": "VEC3"
+    },
+    {
+      "componentType": 5123,
+      "count": 329529,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "generator": "Created by RapidCompact v4.6.0 | www.rapidcompact.com",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 124001,
+      "byteOffset": 0
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 124004,
+      "uri": "golden-teapot-draco.data.bin"
+    }
+  ],
+  "extensionsRequired": [
+    "KHR_draco_mesh_compression"
+  ],
+  "extensionsUsed": [
+    "KHR_draco_mesh_compression"
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.90000000000000002,
+          0.69999999999999996,
+          0,
+          1
+        ],
+        "roughnessFactor": 0.20000000000000001
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "extensions": {
+            "KHR_draco_mesh_compression": {
+              "attributes": {
+                "NORMAL": 2,
+                "POSITION": 0,
+                "TEXCOORD_0": 1
+              },
+              "bufferView": 0
+            }
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

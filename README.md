@@ -37,7 +37,13 @@ python optimize.py -d
 
 ### Using qa-mode to prepare data for the use in the qa-tool
 
-By using the qa-mode the structure of the output directory will differ from the input directory structure (how it is usually). Also the output formats will alwqays be a single .glb file per asset. U can still use all the other settings. To generate these outputs, use the `-q` flag:
+By using the qa-mode the structure of the output directory will differ from the input directory structure (how it is usually). Also the output formats will always be a single .glb file per asset. U can still use the other settings, but there are some requirements for the input assets when using the qa-mode:
+
+* no assets with backward references in folder structures
+* no nested assets are possible
+* maximum one asset per directory (except only .glb files)
+
+To generate this output structur, use the `-q` flag:
 ```
 python optimize.py -q
 ```
