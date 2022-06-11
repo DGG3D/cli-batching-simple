@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
-from __future__ import barry_as_FLUFL
-from ntpath import join
 import os
-from statistics import mode
 import subprocess
 import sys
 import shutil
@@ -34,6 +31,7 @@ parser.add_argument("-t", "--target",              help="target parameter to be 
 parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_web")
 parser.add_argument("-d", "--delete_output_first", help="if specified, content of the output directory will be deleted (cleaned up) before processing", action="store_true")
 parser.add_argument("-q", "--qa_mode",             help="if specified, content of the output directory will be adjust to use as input for the qa-tool", action="store_true")
+parser.add_argument("-r", "--rapidcompact_exe",    help="RapidCompact CLI executable", default="rpdx")
 
 pArgs    = parser.parse_args()
 argsDict = vars(pArgs)
@@ -44,6 +42,7 @@ outputSuffix    = argsDict["suffix"]
 configFile      = argsDict["configFile"]
 compactTarget   = argsDict["target"]
 outputSuffix    = argsDict["suffix"]
+rpdxExe         = argsDict["rapidcompact_exe"]
 cleanupFirst    = pArgs.delete_output_first
 qa_mode         = pArgs.qa_mode
 
