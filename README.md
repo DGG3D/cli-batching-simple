@@ -72,6 +72,7 @@ python optimize.py -h
 The list of parameters should be the following:
 ```
 usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] [-c CONFIGFILE] [-t TARGET] [-s SUFFIX] [-d] [-q]
+                   [-r RAPIDCOMPACT_EXE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -89,4 +90,6 @@ optional arguments:
   -d, --delete_output_first
                         if specified, content of the output directory will be deleted (cleaned up) before processing
   -q, --qa_mode         if specified, content of the output directory will be adjust to use as input for the qa-tool
+  -r RAPIDCOMPACT_EXE, --rapidcompact_exe RAPIDCOMPACT_EXE
+                        RapidCompact CLI executable
 ```
