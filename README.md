@@ -5,6 +5,7 @@ This script allows you to use RapidCompact CLI on a batch of 3D models, in order
 * create optimized versions of the input models
 * render images of input and output (for comparison)
 * write JSON stats files of input and output (for comparison)
+* can be used to prepare data for the qa-tool (qa-mode)
 
 ## Command line use
 In case you are not familiar with using a command line, or with the RapidCompact CLI, here are some useful tips:
@@ -34,6 +35,19 @@ To start with a cleanup step that deletes the output directory, use the `-d` fla
 python optimize.py -d
 ```
 
+### Using qa-mode to prepare data for the use in the qa-tool
+
+By using the qa-mode the structure of the output directory will differ from the input directory structure (how it is usually). Also the output formats will always be a single .glb file per asset. U can still use the other settings, but there are some requirements for the input assets when using the qa-mode:
+
+* no assets with backward references in folder structures
+* no nested assets are possible
+* maximum one asset per directory (except only .glb files)
+
+To generate this output structur, use the `-q` flag:
+```
+python optimize.py -q
+```
+
 ### Creating and using a config file for RapidCompact
 
 There are multiple ways of obtaining a config file for RapidCompact CLI. Basically, such a file is a JSON file that contains [settings](https://rapidcompact.com/doc/cli/latest/Configuration/index.html) for different parts of the 3D processing pipeline, including import / export, optimization, rendering, compression, and more. Depending on the CLI version you have, there may be different settings available, so it's useful to create a fresh config file using the CLI itself, using the following command:
@@ -57,7 +71,8 @@ python optimize.py -h
 
 The list of parameters should be the following:
 ```
-usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] [-c CONFIGFILE] [-t TARGET] [-s SUFFIX] [-d]
+usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] [-c CONFIGFILE] [-t TARGET] [-s SUFFIX] [-d] [-q]
+                   [-r RAPIDCOMPACT_EXE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -74,4 +89,7 @@ optional arguments:
                         suffix to be used for output file name
   -d, --delete_output_first
                         if specified, content of the output directory will be deleted (cleaned up) before processing
+  -q, --qa_mode         if specified, content of the output directory will be adjust to use as input for the qa-tool
+  -r RAPIDCOMPACT_EXE, --rapidcompact_exe RAPIDCOMPACT_EXE
+                        RapidCompact CLI executable
 ```
