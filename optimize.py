@@ -20,6 +20,8 @@ outputFormats      = ["glb", "gltf"]
 # argument parsing
 # #############################################################################
 
+
+
 parser = ArgumentParser()
 
 parser.add_argument("-i", "--inputDirectory",      help="input directory", default="input")
@@ -28,6 +30,7 @@ parser.add_argument("-c", "--configFile",          help="JSON config file for Ra
 parser.add_argument("-t", "--target",              help="target parameter to be used for RapidCompact -c command (example: 1MB, default: use decimation target from config file)", default="")
 parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_web")
 parser.add_argument("-d", "--delete_output_first", help="if specified, content of the output directory will be deleted (cleaned up) before processing", action="store_true")
+parser.add_argument("-q", "--qa_mode",             help="if specified, content of the output directory will be adjust to use as input for the qa-tool", action="store_true")
 parser.add_argument("-r", "--rapidcompact_exe",    help="RapidCompact CLI executable", default="rpdx")
 
 pArgs    = parser.parse_args()
@@ -41,7 +44,7 @@ compactTarget   = argsDict["target"]
 outputSuffix    = argsDict["suffix"]
 rpdxExe         = argsDict["rapidcompact_exe"]
 cleanupFirst    = pArgs.delete_output_first
-
+qa_mode         = pArgs.qa_mode
 
 # #############################################################################
 # delete content of output dir, if requested
@@ -65,26 +68,29 @@ else:
 collectedExtensions = [".glb", ".gltf", ".stp", ".obj", ".ply", ".fbx"]
 
 inputFiles = []
+#dirsToProcess = [inputDirectory]
 
-dirsToProcess = [inputDirectory]
-
-while dirsToProcess:
-    nextInputDir    = dirsToProcess.pop()
-    allFilesAndDirs = os.listdir(nextInputDir)      
-    for fileOrDir in allFilesAndDirs:
-        name = fileOrDir
-        combinedName = nextInputDir + "/" + name        
-        # file
-        if os.path.isfile(combinedName):            
-            base, ext = os.path.splitext(combinedName) 
-            ext = ext.lower()
-            for cExt in collectedExtensions:
-                if ext == cExt:
-                    inputFiles.append(combinedName)
-                    break
-        # directory
-        else:
-            dirsToProcess.append(combinedName)
+for root, dirs, files in os.walk(inputDirectory):
+    for file in files:
+        if any(map(file.lower().endswith, collectedExtensions)):
+            filepath = os.path.join(root, file)
+            inputFiles.append(filepath)
+if qa_mode:
+    for asset in inputFiles:
+        assetName = Path(asset).stem
+        assetPath = os.path.dirname(asset)
+        assetExt = os.path.splitext(asset)[1]
+        for asset2 in inputFiles:
+            if asset == asset2:
+                continue
+            if assetPath == os.path.dirname(asset2) and (assetExt != ".glb" or os.path.splitext(asset2)[1] != ".glb"):
+                print("ERROR: maximum one asset per directory! \n Can not prosess: " + asset + " and " + asset2)
+                inputFiles.remove(asset)
+                inputFiles.remove(asset2)
+            elif os.path.dirname(asset2).startswith(assetPath) and assetExt != ".glb":
+                print("ERROR: no nested assets possible! \n Can not prosess: " + asset + " and " + asset2)
+                inputFiles.remove(asset)
+                inputFiles.remove(asset2)
             
 print("Collected " + str(len(inputFiles)) + " input files from input directory \"" + inputDirectory + "\".")
 
@@ -99,20 +105,40 @@ for inputFile in inputFiles:
     print("*************************************************************************")
     print("Processing Asset " + str(i) + " / " + str(len(inputFiles)) + ": \"" + inputFile + "\"")
     i += 1
+
+    fnameStem = Path(inputFile).stem                                                #teapot
+    fnamePrefix, ext = os.path.splitext(inputFile)                                  #input/subdir/teapot, .glb
+    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)                        #subdir/teapot
+    outFileprefixAux = os.path.join(outputDirectory, fnameRel)                      #output/subdir/teapot
+
+    #### qa mode is true ####
+    if qa_mode:
+        outFileprefixAuxInput = outFileprefixAux + "-input\\" + fnameStem           #output/subdir/teapot-input/teapot
+        outFileprefixAuxOutput = outFileprefixAux + "-output\\" + fnameStem         #output/subdir/teapot-output/teapot
+        exportFile_statsExport = outFileprefixAuxOutput + outputSuffix + ".json"    #output/subdir/teapot-output/teapot_web.json
+        exportFile_rendering   = outFileprefixAuxOutput + outputSuffix + ".jpg"     #output/subdir/teapot-output/teapot_web.jpg
+        inputFile_statsExport  = outFileprefixAuxInput + "_input.json"              #output/subdir/teapot-input/teapot_input.json
+        inputFile_rendering    = outFileprefixAuxInput + "_input.jpg"               #output/subdir/teapot-input/teapot_input.jpg
     
-    fnameStem = Path(inputFile).stem
-    fnamePrefix, ext = os.path.splitext(inputFile)       
-    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)    
-    outFileprefixAux = os.path.join(outputDirectory, fnameRel)
-    exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"
-    exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"
-    inputFile_statsExport  = outFileprefixAux + "_input.json"
-    inputFile_rendering    = outFileprefixAux + "_input.jpg"
+    else:
+        exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"          #output/subdir/teapot_web.json
+        exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"           #output/subdir/teapot_web.jpg
+        inputFile_statsExport  = outFileprefixAux + "_input.json"                   #output/subdir/teapot_input.json
+        inputFile_rendering    = outFileprefixAux + "_input.jpg"                    #output/subdir/teapot_input.jpg
     
     cmdline = [rpdxExe]
     
     try:
-    
+        #### qa mode is true ####
+        # copy asset file
+        if qa_mode:
+            if ext != ".glb":
+                shutil.copytree(os.path.dirname(inputFile), outFileprefixAux + "-input\\" + fnameStem + "_input\\")
+            else:
+                if not os.path.exists(outFileprefixAux + "-input\\"):
+                    os.makedirs(outFileprefixAux + "-input\\")
+                shutil.copy2(inputFile, outFileprefixAuxInput + "_input" + ext)
+
         hasAllExports = True
         for outFileFormat in outputFormats:            
             exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
@@ -168,18 +194,24 @@ for inputFile in inputFiles:
         cmdline.append("--write_info")
         cmdline.append("\"" + exportFile_statsExport + "\"")
 
-        # export to file(s)
-        for outFileFormat in outputFormats:  
-            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
+        #### qa mode is true ####
+        if qa_mode:
+            exportFile = outFileprefixAuxOutput + outputSuffix + ".glb"
             cmdline.append("-e")
             cmdline.append("\"" + exportFile + "\"")
+
+        else:
+            # export to file(s)
+            for outFileFormat in outputFormats:  
+                exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
+                cmdline.append("-e")
+                cmdline.append("\"" + exportFile + "\"")
      
         # run RapidCompact        
         jointCMD = " ".join(cmdline)
         out = subprocess.check_output(jointCMD)
 
     except Exception as e:        
-        print("\nERROR: RapidCompact CLI could not be run successfully. Make sure it is installed and that the parameters are correct:\n")
         print("\n                       CLI Command:\n" + jointCMD)
         print("\n                       CLI Output:\n" + e.output.decode())        
 
