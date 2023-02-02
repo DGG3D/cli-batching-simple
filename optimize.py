@@ -113,8 +113,8 @@ for inputFile in inputFiles:
 
     #### qa mode is true ####
     if qa_mode:
-        outFileprefixAuxInput = outFileprefixAux + "-input\\" + fnameStem           #output/subdir/teapot-input/teapot
-        outFileprefixAuxOutput = outFileprefixAux + "-output\\" + fnameStem         #output/subdir/teapot-output/teapot
+        outFileprefixAuxInput = outFileprefixAux + "-input/" + fnameStem           #output/subdir/teapot-input/teapot
+        outFileprefixAuxOutput = outFileprefixAux + "-output/" + fnameStem         #output/subdir/teapot-output/teapot
         exportFile_statsExport = outFileprefixAuxOutput + outputSuffix + ".json"    #output/subdir/teapot-output/teapot_web.json
         exportFile_rendering   = outFileprefixAuxOutput + outputSuffix + ".jpg"     #output/subdir/teapot-output/teapot_web.jpg
         inputFile_statsExport  = outFileprefixAuxInput + "_input.json"              #output/subdir/teapot-input/teapot_input.json
@@ -163,7 +163,7 @@ for inputFile in inputFiles:
         # rendering settings
         cmdline.append("-s")
         cmdline.append("rendering:cameraViewVector")
-        cmdline.append("\"0.5 -0.5 -1\"")
+        cmdline.append("0.5 -0.5 -1")
         cmdline.append("-s")
         cmdline.append("rendering:imageWidth")
         cmdline.append("512")
@@ -176,13 +176,13 @@ for inputFile in inputFiles:
                  
         # import
         cmdline.append("-i")
-        cmdline.append("\"" + inputFile + "\"")
+        cmdline.append(inputFile)
         
         # write stats and rendering for input
         cmdline.append("--write_info")
-        cmdline.append("\"" + inputFile_statsExport + "\"")
+        cmdline.append(inputFile_statsExport)
         cmdline.append("--render_image")
-        cmdline.append("\"" + inputFile_rendering + "\"")
+        cmdline.append(inputFile_rendering)
         
         # create atlas        
         cmdline.append("-c")
@@ -190,26 +190,26 @@ for inputFile in inputFiles:
         
         # write stats and rendering for output
         cmdline.append("--render_image")
-        cmdline.append("\"" + exportFile_rendering + "\"")
+        cmdline.append(exportFile_rendering)
         cmdline.append("--write_info")
-        cmdline.append("\"" + exportFile_statsExport + "\"")
+        cmdline.append(exportFile_statsExport)
 
         #### qa mode is true ####
         if qa_mode:
             exportFile = outFileprefixAuxOutput + outputSuffix + ".glb"
             cmdline.append("-e")
-            cmdline.append("\"" + exportFile + "\"")
+            cmdline.append(exportFile)
 
         else:
             # export to file(s)
             for outFileFormat in outputFormats:  
                 exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
                 cmdline.append("-e")
-                cmdline.append("\"" + exportFile + "\"")
+                cmdline.append(exportFile)
      
         # run RapidCompact        
         jointCMD = " ".join(cmdline)
-        out = subprocess.check_output(jointCMD)
+        out = subprocess.check_output(cmdline)
 
     except Exception as e:        
         print("\n                       CLI Command:\n" + jointCMD)
