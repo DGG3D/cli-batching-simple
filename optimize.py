@@ -186,7 +186,8 @@ for inputFile in inputFiles:
         
         # create atlas        
         cmdline.append("-c")
-        cmdline.append(compactTarget)
+        if compactTarget:
+            cmdline.append(compactTarget)
         
         # write stats and rendering for output
         cmdline.append("--render_image")
