@@ -1,4 +1,7 @@
 # cli-batching-simple
+
+<ins>Note that this python script is only compatible with the RapidCompact CLI v1.x-v6.x</ins>
+
 A simple batch processing script for RapidCompact CLI
 
 This script allows you to use RapidCompact CLI on a batch of 3D models, in order to
