@@ -1,0 +1,42 @@
+{
+  "optimize": {
+    "3dModelOptimizationMethod": {
+      "meshAndMaterialOptimization": {
+        "decimator": {
+          "target": {
+            "faces": {
+              "percentage": 15.0
+            },
+            "deviation": {
+              "percentage": 0.0
+            }
+          },
+          "materialOptimization": {
+            "materialMerger": {
+              "materialRegenerator": {
+                "uvAtlasGenerator": {
+                  "textureBaker": {
+                    "normalMap": {}
+                  }
+                }
+              }
+            }
+          },
+          "collapseDistanceThreshold": 0.01
+        }
+      }
+    }
+  },
+  "export": [
+    {
+      "fileName": "glb",
+      "textureMapFilePrefix": "",
+      "discard": {},
+      "format": {
+        "gltf": {
+          "pbrMaterial": {}
+        }
+      }
+    }
+  ]
+}
