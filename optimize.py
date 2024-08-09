@@ -86,6 +86,9 @@ for inputFile in inputFiles:
     outFileprefixAux = os.path.join(outputDirectory, fnameRel)                      #output/subdir/teapot
     cmdline = [rpdxExe]
 
+    jointCMD = ""
+    errStr   = ""
+
     try:
         # general settings
         if configFile != "":
@@ -108,11 +111,22 @@ for inputFile in inputFiles:
             cleanUp(jointOutDirectory)
         else:
             print("No cleanup flag specified, using output directory as-is.")
-        out = subprocess.check_output(jointCMD)
+        out    = subprocess.run(jointCMD, capture_output=True)
+        errStr = out.stderr
 
     except Exception as e:        
-        print("\n                       CLI Command:\n" + jointCMD)
-        print("\n                       CLI Output:\n" + e.output.decode())        
+        errStr = e.output.decode()
+        print("\n                       CLI Command:\n" + jointCMD)        
+        print("\n                       CLI Output:\n"  + errStr)        
+
+    # if process had errors, show them in error log directory
+    if "ERROR:" in str(errStr):
+        errFileName = inputFile.replace("/", "~").replace("\\", "~").replace(".", "~")
+        if not os.path.exists("_errors"):
+            os.makedirs("_errors")        
+        f = open("_errors/" + errFileName + ".txt", "w")
+        f.write(errStr.decode("utf-8"))
+        f.close()
 
 print("*************************************************************************")
 print("Done.")

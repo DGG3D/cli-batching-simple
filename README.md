@@ -26,9 +26,9 @@ To *display help and available options*, use this command:
 python optimize.py -h
 ```
 
-To *run* this script, optimizing all assets within directory "input" with default parameters and exporting results to output directory "output", use the following command:
+To *run* this script, optimizing all assets within directory "input" with default parameters and exporting results to output directory "output" by applying a config file called "config.json", use the following command:
 ```
-python optimize.py
+python optimize.py -i input -o output -c config.json
 ```
 
 <!---### Deleting the output directory first (cleanup)
@@ -74,8 +74,7 @@ python optimize.py -h
 
 The list of parameters should be the following:
 ```
-usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] [-c CONFIGFILE] [-t TARGET] [-s SUFFIX] [-d] [-q]
-                   [-r RAPIDCOMPACT_EXE]
+usage: optimize.py [-h] [-i INPUTDIRECTORY] [-o OUTPUTDIRECTORY] -c CONFIGFILE [-d]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -85,4 +84,7 @@ optional arguments:
                         output directory
   -c CONFIGFILE, --configFile CONFIGFILE
                         JSON config file for RapidCompact
+  -d, --delete_output_first
+                        if specified, content of the output directory will be deleted
+                        (cleaned up) before processing
 ```
