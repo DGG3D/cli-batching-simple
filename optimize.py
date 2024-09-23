@@ -46,7 +46,6 @@ cleanupFirst    = pArgs.delete_output_first
 def findGltfOutput(outputDir):
     for root, dirs, files in os.walk(outputDir):
         for f in files:
-            print('FILE', f)
             if Path(f).suffix in ['.gltf', '.glb']:
                 return os.path.join(root, f)
     return None
