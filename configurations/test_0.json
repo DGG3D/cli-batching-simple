@@ -4,11 +4,8 @@
       "meshAndMaterialOptimization": {
         "decimator": {
           "target": {
-            "faces": {
-              "percentage": 15.0
-            },
             "deviation": {
-              "percentage": 0.0
+              "percentage": 0.01
             }
           },
           "materialOptimization": {
@@ -29,7 +26,6 @@
   },
   "export": [
     {
-      "fileName": "glb",
       "textureMapFilePrefix": "",
       "discard": {},
       "format": {
