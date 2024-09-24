@@ -4,8 +4,11 @@
       "meshAndMaterialOptimization": {
         "decimator": {
           "target": {
+            "faces": {
+              "percentage": 15.0
+            },
             "deviation": {
-              "percentage": 0.01
+              "percentage": 0.0
             }
           },
           "materialOptimization": {
