@@ -69,7 +69,7 @@ def cleanUp(outputDirectory):
 # #############################################################################
 
 # specify all accepted extensions here (as lower case, other cases will be automatically accepted as well)
-collectedExtensions = [".glb", ".gltf", ".stp", ".obj", ".ply", ".fbx", ".usd", ".usdc", ".usda", ".usdz"]
+collectedExtensions = [".glb", ".gltf", ".vrm", ".stp", ".obj", ".ply", ".fbx", ".usd", ".usdc", ".usda", ".usdz"]
 
 inputFiles = []
 
