@@ -41,7 +41,7 @@ configFile      = argsDict["configFile"]
 configFilePath  = Path(configFile)
 configName     = configFilePath.stem
 cleanupFirst    = pArgs.delete_output_first
-
+rpdxExe = pArgs.rapidcompact_exe
 
 def findGltfOutput(outputDir):
     for root, dirs, files in os.walk(outputDir):
@@ -121,17 +121,24 @@ for inputFile in inputFiles:
     inputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
     inputRenderSrcPath = os.path.join(inputRenderSrcDir, 'image.png')
     # desired path
-    inputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.jpg')
+    # inputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.png')
+    fname = '_'.join(Path(fnameRel, fnameStem + '_input.png').parts)
+    inputRenderDstPath = os.path.join(outputDirectory, 'renderings', fname)
+
     # path written by rpdx (just using the same as input)
     outputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
     outputRenderSrcPath = os.path.join(outputRenderSrcDir, 'image.png')
     # desired path
-    outputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.jpg')
+    # outputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.png')
+    fname = '_'.join(Path(fnameRel, fnameStem + '_output.png').parts)
+    outputRenderDstPath = os.path.join(outputDirectory, 'renderings', fname)
 
     jointCMD = ""
     errStr   = ""
 
     try:
+        os.makedirs(os.path.join(outputDirectory, 'renderings'), exist_ok=True)
+
         cmdline = [rpdxExe]
 
         # general settings
@@ -175,7 +182,7 @@ for inputFile in inputFiles:
     if "ERROR:" in str(errStr):
         errFileName = inputFile.replace("/", "~").replace("\\", "~").replace(".", "~")
         if not os.path.exists("_errors"):
-            os.makedirs("_errors")        
+            os.makedirs("_errors")
         f = open("_errors/" + errFileName + ".txt", "w")
         f.write(errStr)
         f.close()
