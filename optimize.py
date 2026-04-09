@@ -41,12 +41,12 @@ configFile      = argsDict["configFile"]
 configFilePath  = Path(configFile)
 configName     = configFilePath.stem
 cleanupFirst    = pArgs.delete_output_first
-rpdxExe = pArgs.rapidcompact_exe
 
-def findGltfOutput(outputDir):
+
+def findRenderOutput(outputDir):
     for root, dirs, files in os.walk(outputDir):
         for f in files:
-            if Path(f).suffix in ['.gltf', '.glb']:
+            if Path(f).suffix in ['.gltf', '.glb', '.vrm', '.obj', '.ply', '.fbx', '.usd', '.usdc', '.usda', '.usdz']:
                 return os.path.join(root, f)
     return None
 
@@ -69,7 +69,7 @@ def cleanUp(outputDirectory):
 # #############################################################################
 
 # specify all accepted extensions here (as lower case, other cases will be automatically accepted as well)
-collectedExtensions = [".glb", ".gltf", ".vrm", ".stp", ".obj", ".ply", ".fbx", ".usd", ".usdc", ".usda", ".usdz"]
+collectedExtensions = [".glb", ".gltf", ".vrm", ".stp", ".obj", ".ply", ".fbx", ".usd", ".usdc", ".usda", ".usdz", ".3dm", ".3ds", ".3dxml", ".3mf", ".arc", ".asm", ".catdrawing", ".catpart", ".catproduct", ".catshape", ".cgr", ".dae", ".dgn", ".dlv", ".dwf", ".dwfx", ".dwg", ".dxf", ".exp", ".iam", ".ifc", ".ifczip", ".iges", ".igs", ".ipt", ".jt", ".mf1", ".model", ".nwd", ".neu", ".par", ".pkg", ".prc", ".prt", ".psm", ".pwd", ".rfa", ".rvt", ".sab", ".sat", ".session", ".sldasm", ".sldprt", ".step", ".step", ".STP", ".STEP", ".stpx", ".stpz", ".stpxz", ".u3d", ".unv", ".vda", ".vmrl", ".wrl" , ".x_b" , ".x_t", ".xas", ".xmt", ".xmt_txt", ".xpr"]
 
 inputFiles = []
 
@@ -121,24 +121,17 @@ for inputFile in inputFiles:
     inputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
     inputRenderSrcPath = os.path.join(inputRenderSrcDir, 'image.png')
     # desired path
-    # inputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.png')
-    fname = '_'.join(Path(fnameRel, fnameStem + '_input.png').parts)
-    inputRenderDstPath = os.path.join(outputDirectory, 'renderings', fname)
-
+    inputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.jpg')
     # path written by rpdx (just using the same as input)
     outputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
     outputRenderSrcPath = os.path.join(outputRenderSrcDir, 'image.png')
     # desired path
-    # outputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.png')
-    fname = '_'.join(Path(fnameRel, fnameStem + '_output.png').parts)
-    outputRenderDstPath = os.path.join(outputDirectory, 'renderings', fname)
+    outputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.jpg')
 
     jointCMD = ""
     errStr   = ""
 
     try:
-        os.makedirs(os.path.join(outputDirectory, 'renderings'), exist_ok=True)
-
         cmdline = [rpdxExe]
 
         # general settings
@@ -182,21 +175,21 @@ for inputFile in inputFiles:
     if "ERROR:" in str(errStr):
         errFileName = inputFile.replace("/", "~").replace("\\", "~").replace(".", "~")
         if not os.path.exists("_errors"):
-            os.makedirs("_errors")
+            os.makedirs("_errors")        
         f = open("_errors/" + errFileName + ".txt", "w")
         f.write(errStr)
         f.close()
 
-    gltfOutputFile = findGltfOutput(outputDir)
-    if not gltfOutputFile:
-        raise Exception("Could not find gltf output for rendering")
+    renderOutputFile = findRenderOutput(outputDir)
+    if not renderOutputFile:
+        raise Exception("Could not find output file for rendering")
 
     # Render Output
     try:
         
         cmdline = [rpdxExe]
         cmdline.append("-i")
-        cmdline.append(gltfOutputFile)   
+        cmdline.append(renderOutputFile)   
         cmdline.append("-o")
         cmdline.append(outputDir)
         cmdline.append("-r")
