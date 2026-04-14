@@ -6,15 +6,13 @@ import sys
 import shutil
 from pathlib import Path
 from argparse import ArgumentParser
-
+import json
 
 # #############################################################################
 # static variables
 # #############################################################################
 
 rpdxExe            = "rpdx"
-outputFormats      = ["glb", "gltf", "usdz", "usd", "fbx", "obj", "vrm"]
-
 
 # #############################################################################
 # argument parsing
@@ -24,10 +22,10 @@ parser = ArgumentParser()
 
 parser.add_argument("-i", "--inputDirectory",      help="input directory", default="input")
 parser.add_argument("-o", "--outputDirectory",     help="output directory", default="output")
-parser.add_argument("-c", "--configFile",          help="JSON config file for RapidCompact", default="")
-parser.add_argument("-t", "--target",              help="target parameter to be used for RapidCompact -c command (example: 1MB, default: use decimation target from config file)", default="")
-parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_opt")
+parser.add_argument("-c", "--configFile",          help="JSON config file for RapidCompact", default="", required=True)
+parser.add_argument("-s", "--suffix",              help="suffix to be used for output file name", default="_web")
 parser.add_argument("-d", "--delete_output_first", help="if specified, content of the output directory will be deleted (cleaned up) before processing", action="store_true")
+parser.add_argument("-r", "--rapidcompact_exe",    help="RapidCompact CLI executable", default="rpdx")
 
 pArgs    = parser.parse_args()
 argsDict = vars(pArgs)
@@ -36,23 +34,30 @@ inputDirectory  = argsDict["inputDirectory"]
 outputDirectory = argsDict["outputDirectory"]
 outputSuffix    = argsDict["suffix"]
 configFile      = argsDict["configFile"]
-compactTarget   = argsDict["target"]
-outputSuffix    = argsDict["suffix"]
+configFilePath  = Path(configFile)
+configName     = configFilePath.stem
 cleanupFirst    = pArgs.delete_output_first
 
 
-# #############################################################################
-# delete content of output dir, if requested
-# #############################################################################
+def findRenderOutput(outputDir):
+    for root, dirs, files in os.walk(outputDir):
+        for f in files:
+            if Path(f).suffix in ['.gltf', '.glb', '.vrm', '.obj', '.ply', '.fbx', '.usd', '.usdc', '.usda', '.usdz']:
+                return os.path.join(root, f)
+    return None
 
-if cleanupFirst:    
+
+def cleanUp(outputDirectory):
     if os.path.exists(outputDirectory):
         print("Cleaning up output directory")
         shutil.rmtree(outputDirectory)    
     else:
         print("Output directory doesn't exist yet, no cleanup necessary.")
-else:
-    print("No cleanup flag specified, using output directory as-is.")
+
+
+# #############################################################################
+# delete content of output dir, if requested
+# #############################################################################
     
 
 # #############################################################################
@@ -60,32 +65,34 @@ else:
 # #############################################################################
 
 # specify all accepted extensions here (as lower case, other cases will be automatically accepted as well)
-collectedExtensions = [".glb", ".gltf", ".stp", ".obj", ".ply", ".fbx", ".FBX", ".usdz", ".usd", ".usda", ".usdc", ".iges", ".IGES", ".stp", ".step", ".STEP", ".vrm"]
+collectedExtensions = [".glb", ".gltf", ".vrm", ".stp", ".obj", ".ply", ".fbx", ".usd", ".usdc", ".usda", ".usdz", ".3dm", ".3ds", ".3dxml", ".3mf", ".arc", ".asm", ".catdrawing", ".catpart", ".catproduct", ".catshape", ".cgr", ".dae", ".dgn", ".dlv", ".dwf", ".dwfx", ".dwg", ".dxf", ".exp", ".iam", ".ifc", ".ifczip", ".iges", ".igs", ".ipt", ".jt", ".mf1", ".model", ".nwd", ".neu", ".par", ".pkg", ".prc", ".prt", ".psm", ".pwd", ".rfa", ".rvt", ".sab", ".sat", ".session", ".sldasm", ".sldprt", ".step", ".step", ".STP", ".STEP", ".stpx", ".stpz", ".stpxz", ".u3d", ".unv", ".vda", ".vmrl", ".wrl" , ".x_b" , ".x_t", ".xas", ".xmt", ".xmt_txt", ".xpr"]
 
 inputFiles = []
 
-dirsToProcess = [inputDirectory]
-
-while dirsToProcess:
-    nextInputDir    = dirsToProcess.pop()
-    allFilesAndDirs = os.listdir(nextInputDir)      
-    for fileOrDir in allFilesAndDirs:
-        name = fileOrDir
-        combinedName = nextInputDir + "/" + name        
-        # file
-        if os.path.isfile(combinedName):            
-            base, ext = os.path.splitext(combinedName) 
-            ext = ext.lower()
-            for cExt in collectedExtensions:
-                if ext == cExt:
-                    inputFiles.append(combinedName)
-                    break
-        # directory
-        else:
-            dirsToProcess.append(combinedName)
+for root, dirs, files in os.walk(inputDirectory):
+    for file in files:
+        if any(map(file.lower().endswith, collectedExtensions)):
+            filepath = os.path.join(root, file)
+            inputFiles.append(filepath)
             
 print("Collected " + str(len(inputFiles)) + " input files from input directory \"" + inputDirectory + "\".")
 
+
+# rendering configuration
+renderConf = {
+    "output": {
+        "singleImage": {
+            "cameraViewVector": [0.5, -0.5, -1]
+        }
+    },
+    "imageWidth": 512,
+    "imageHeight": 512,
+    "background": "white"
+}
+
+#TODO: this may need to be written to a temp folder
+with open("render.json", "w") as f:
+    json.dump(renderConf, f)
 
 # #############################################################################
 # process input files
@@ -97,88 +104,115 @@ for inputFile in inputFiles:
     print("*************************************************************************")
     print("Processing Asset " + str(i) + " / " + str(len(inputFiles)) + ": \"" + inputFile + "\"")
     i += 1
-    
-    fnameStem = Path(inputFile).stem
-    fnamePrefix, ext = os.path.splitext(inputFile)       
-    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)    
-    outFileprefixAux = os.path.join(outputDirectory, fnameRel)
-    exportFile_statsExport = outFileprefixAux + outputSuffix + ".json"
-    exportFile_rendering   = outFileprefixAux + outputSuffix + ".jpg"
-    inputFile_statsExport  = outFileprefixAux + "_input.json"
-    inputFile_rendering    = outFileprefixAux + "_input.jpg"
-    
-    cmdline = [rpdxExe]
-    
+
+    fpath = Path(inputFile)
+    fnameStem = fpath.stem                                           #teapot
+    fnamePrefix, ext = os.path.splitext(inputFile)                   #input/subdir/teapot, .glb
+    fnamePrefix += outputSuffix
+    fnameRel  = os.path.relpath(fnamePrefix, inputDirectory)         #subdir/teapot
+    outputDir = os.path.join(outputDirectory, fnameRel)              #output/subdir/teapot
+    inputInfoPath  = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.json')
+    outputInfoPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.json')
+    # path written by rpdx
+    inputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
+    inputRenderSrcPath = os.path.join(inputRenderSrcDir, 'image.png')
+    # desired path
+    inputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_input.jpg')
+    # path written by rpdx (just using the same as input)
+    outputRenderSrcDir  = os.path.join(outputDirectory, fnameRel, 'renderings')
+    outputRenderSrcPath = os.path.join(outputRenderSrcDir, 'image.png')
+    # desired path
+    outputRenderDstPath = os.path.join(outputDirectory, fnameRel, fnameStem + '_output.jpg')
+
+    jointCMD = ""
+    errStr   = ""
+
     try:
-    
-        hasAllExports = True
-        for outFileFormat in outputFormats:            
-            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
-            if not os.path.isfile(exportFile):
-                hasAllExports = False
-                break            
-    
-        # check if results already exist
-        if os.path.isfile(inputFile_statsExport) and \
-           os.path.isfile(inputFile_rendering)   and \
-           os.path.isfile(exportFile_statsExport) and \
-           os.path.isfile(exportFile_rendering  ) and \
-           hasAllExports:           
-           print("=> Results already exist, skipping.")
-           continue
-    
+        cmdline = [rpdxExe]
+
         # general settings
         if configFile != "":
             cmdline.append("--read_config")
             cmdline.append(configFile)
-        
-        # rendering settings
-        cmdline.append("-s")
-        cmdline.append("rendering:cameraViewVector")
-        cmdline.append("\"0.5 -0.5 -1\"")
-        cmdline.append("-s")
-        cmdline.append("rendering:imageWidth")
-        cmdline.append("512")
-        cmdline.append("-s")
-        cmdline.append("rendering:imageHeight")
-        cmdline.append("512")
-        cmdline.append("-s")
-        cmdline.append("rendering:background")
-        cmdline.append("vignette")
-                 
+
         # import
         cmdline.append("-i")
-        cmdline.append(inputFile)
-        
-        # write stats and rendering for input
+        cmdline.append(inputFile)   
+        cmdline.append("-o")
+        cmdline.append(outputDir)
+        cmdline.append("-r")
         cmdline.append("--write_info")
-        cmdline.append(inputFile_statsExport)
-        cmdline.append("--render_image")
-        cmdline.append(inputFile_rendering)
-        
-        # create atlas        
-        cmdline.append("-c")
-        if compactTarget:
-            cmdline.append(compactTarget)
-        
-        # write stats and rendering for output
-        cmdline.append("--render_image")
-        cmdline.append(exportFile_rendering)
-        cmdline.append("--write_info")
-        cmdline.append(exportFile_statsExport)
+        cmdline.append(inputInfoPath)
+        cmdline.append("--render")
+        cmdline.append("render.json")
 
-        # export to file(s)
-        for outFileFormat in outputFormats:  
-            exportFile = outFileprefixAux + outputSuffix + "-" + outFileFormat + "/" + fnameStem + outputSuffix + "." + outFileFormat       
-            cmdline.append("-e")
-            cmdline.append(exportFile)
-     
         # run RapidCompact        
-        out = subprocess.check_output(cmdline)
+        jointCMD = " ".join(cmdline)
+        print(jointCMD)
+
+        if cleanupFirst:
+            cleanUp(outputDir)
+        else:
+            print("No cleanup flag specified, using output directory as-is.")
+        out    = subprocess.check_output(cmdline, stderr=subprocess.STDOUT)
+
+        # copy input file rendering
+        if Path(inputRenderSrcPath).is_file():
+            shutil.copy(inputRenderSrcPath, inputRenderDstPath)
+            Path(inputRenderSrcPath).unlink()
+            Path(inputRenderSrcDir).rmdir()
 
     except Exception as e:        
-        print("\n                       CLI Command:\n", " ".join(cmdline))
-        print("\n                       CLI Output:\n" + e.output.decode())        
+        errStr = e.output.decode()
+        print("\n                       CLI Command:\n" + jointCMD)        
+        print("\n                       CLI Output:\n"  + e.output.decode())        
+
+    # if process had errors, show them in error log directory
+    if "ERROR:" in str(errStr):
+        errFileName = inputFile.replace("/", "~").replace("\\", "~").replace(".", "~")
+        if not os.path.exists("_errors"):
+            os.makedirs("_errors")        
+        f = open("_errors/" + errFileName + ".txt", "w")
+        f.write(errStr)
+        f.close()
+
+    renderOutputFile = findRenderOutput(outputDir)
+    if not renderOutputFile:
+        raise Exception("Could not find output file for rendering")
+
+    # Render Output
+    try:
+        
+        cmdline = [rpdxExe]
+        cmdline.append("-i")
+        cmdline.append(renderOutputFile)   
+        cmdline.append("-o")
+        cmdline.append(outputDir)
+        cmdline.append("-r")
+        cmdline.append("--write_info")
+        cmdline.append(outputInfoPath)
+        cmdline.append("--render")
+        cmdline.append("render.json")
+
+        # run RapidCompact        
+        jointCMD = " ".join(cmdline)
+        print(jointCMD)
+
+        out    = subprocess.check_output(cmdline, stderr=subprocess.STDOUT)
+
+        # copy input file rendering
+        if Path(outputRenderSrcPath).is_file():
+            shutil.copy(outputRenderSrcPath, outputRenderDstPath)
+            Path(outputRenderSrcPath).unlink()
+            Path(outputRenderSrcDir).rmdir()
+
+
+    except Exception as e:        
+        errStr += e.output.decode()
+        print("\n                       CLI Command:\n" + jointCMD)        
+        print("\n                       CLI Output:\n"  + e.output.decode())        
+
+
 
 print("*************************************************************************")
 print("Done.")
